@@ -1,0 +1,100 @@
+.container{
+    max-width: 1200px;
+    width: 100%;
+    margin:0 auto;
+    padding:0 15px;
+    height: 100%;
+}
+.wrapper {
+    display: flex;
+    justify-content: space-between;
+}
+
+.sectionPreview{
+    margin-top: 40px;
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+}
+.dogsFamilyPhoto{
+   /*max-width: 100%;*/
+    height: 400px;
+}
+
+.statistics h2 {
+    margin: 10px 85px;
+    font-family: 'Baloo';
+    text-shadow: 1px 1px 2px pink;
+
+}
+
+.infoAboutGroup {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    border:1px solid #1995AD;
+    border-radius: 30px;
+    padding: 10px;
+}
+
+.dlContainer{
+    display: flex;
+    flex-direction: column;
+    gap: 35px;
+    margin-right: 15px;
+}
+
+.dlContainer .infoAboutGroup dd{
+    margin-right: 35px;
+}
+.describeCompanionDogsRef{
+    text-decoration: none;
+    color: black;
+    font-family: "Book Antiqua";
+
+}
+
+.height {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    border:1px solid #1995AD;
+    border-radius: 30px;
+    font-family: "Book Antiqua";
+    padding: 10px;
+}
+
+.height dd {
+    margin-left: 10px;
+}
+
+.weight{
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    border:1px solid #1995AD;
+    border-radius: 30px;
+    padding: 10px;
+}
+.weight dd {
+    margin-right: 35px;
+    font-family: "Book Antiqua";
+}
+
+.LiveSpan{
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    border:1px solid #1995AD;
+    border-radius: 30px;
+    padding: 10px;
+}
+
+.LiveSpan dd {
+    margin-right: 40px;
+    font-family: "Book Antiqua";
+}

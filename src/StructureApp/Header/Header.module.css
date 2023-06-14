@@ -1,0 +1,40 @@
+
+.header {
+    background-color: #F1F1F2;
+}
+
+.container {
+    max-width: 1200px;
+    width: 100%;
+    margin: 0 auto;
+    padding:0 15px;
+    height: 100%;
+}
+
+.wrapper{
+    display: flex;
+    justify-content: space-between;
+
+}
+
+.navbarlist  {
+    display: flex;
+    flex-direction: row;
+    padding: 30px;
+    font-weight: 300;
+    font-size: 25px;
+    gap: 100px;
+}
+
+.navbarlist :hover {
+    color: #1995AD;
+}
+
+
+.logoPhoto {
+    width: 60px;
+    height: 60px;
+    margin-top: 10px;
+}
+
+
