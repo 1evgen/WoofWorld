@@ -10,10 +10,19 @@ app.use(express.json());
 const db = client.db('DogHub')
 
 app.get('/infoDogs', async (req: Request, res: Response) => {
-    const products = await db.collection('dogs').find({}).toArray()
-    res.status(200).send(products)
+    const dogs = await db.collection('dogs').find({}).toArray()
+    res.status(200).send(dogs)
 })
 
+app.get('/sellers', async (req: Request, res: Response)=> {
+    try{
+        const sellers = await db.collection('seller').find({}).toArray()
+        res.status(200).send(sellers)
+    } catch (error){
+        res.status(500)
+        console.log(error)
+    }
+})
 
 const startApp = async () => {
     try {

@@ -16,8 +16,18 @@ const PORT = process.env.PORT || "3003";
 app.use(express.json());
 const db = bd_1.client.db('DogHub');
 app.get('/infoDogs', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    const products = yield db.collection('dogs').find({}).toArray();
-    res.status(200).send(products);
+    const dogs = yield db.collection('dogs').find({}).toArray();
+    res.status(200).send(dogs);
+}));
+app.get('/sellers', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    try {
+        const sellers = yield db.collection('seller').find({}).toArray();
+        res.status(200).send(sellers);
+    }
+    catch (error) {
+        res.status(500);
+        console.log(error);
+    }
 }));
 const startApp = () => __awaiter(void 0, void 0, void 0, function* () {
     try {
