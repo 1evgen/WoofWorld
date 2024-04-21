@@ -9,25 +9,20 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-const bd_1 = require("./bd/bd");
-const express = require("express");
-const app = express();
-const PORT = process.env.PORT || "3003";
-app.use(express.json());
-const db = bd_1.client.db('DogHub');
-app.get('/infoDogs', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    const products = yield db.collection('dogs').find({}).toArray();
-    res.status(200).send(products);
-}));
-const startApp = () => __awaiter(void 0, void 0, void 0, function* () {
-    try {
-        yield (0, bd_1.runDb)();
-        app.listen(PORT, () => {
-            console.log(`The server started success ! Port - ${PORT}`);
-        });
-    }
-    catch (_a) {
-        console.log('error');
-    }
-});
-startApp();
+exports.runDb = exports.client = void 0;
+const mongodb_1 = require("mongodb");
+let MongoUri = process.env.MongoUri || "mongodb://127.0.0.1:27017/DogHub";
+exports.client = new mongodb_1.MongoClient(MongoUri);
+function runDb() {
+    return __awaiter(this, void 0, void 0, function* () {
+        try {
+            yield exports.client.connect();
+            console.log('BD is running');
+        }
+        catch (_a) {
+            yield exports.client.close();
+            console.log('bd falling!');
+        }
+    });
+}
+exports.runDb = runDb;
