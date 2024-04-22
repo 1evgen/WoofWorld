@@ -11,22 +11,34 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 Object.defineProperty(exports, "__esModule", { value: true });
 const bd_1 = require("./bd/bd");
 const express = require("express");
+const mongodb_1 = require("mongodb");
 const app = express();
 const PORT = process.env.PORT || "3003";
 app.use(express.json());
 const db = bd_1.client.db('DogHub');
-app.get('/infoDogs', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+app.get('/allDogs', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const dogs = yield db.collection('dogs').find({}).toArray();
     res.status(200).send(dogs);
 }));
-app.get('/sellers', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+app.post('/pet', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const newPet = {
+        _id: new mongodb_1.ObjectId(),
+        breed: req.body.breed,
+        name: req.body.name,
+        ageMonth: req.body.age,
+        gender: req.body.gender,
+        price: req.body.price,
+        description: req.body.description,
+        additionalInfo: req.body.additionalInfo,
+        photos: ['ch.jpg'],
+        sellerId: req.body.sellerId
+    };
     try {
-        const sellers = yield db.collection('seller').find({}).toArray();
-        res.status(200).send(sellers);
+        let addNewPet = yield db.collection('newPet').insertOne(newPet);
+        res.status(200).send(addNewPet);
     }
-    catch (error) {
+    catch (err) {
         res.status(500);
-        console.log(error);
     }
 }));
 const startApp = () => __awaiter(void 0, void 0, void 0, function* () {
@@ -40,4 +52,14 @@ const startApp = () => __awaiter(void 0, void 0, void 0, function* () {
         console.log('error');
     }
 });
+app.get('/sellers', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    try {
+        const sellers = yield db.collection('seller').find({}).toArray();
+        res.status(200).send(sellers);
+    }
+    catch (error) {
+        res.status(500);
+        console.log(error);
+    }
+}));
 startApp();
