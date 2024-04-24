@@ -34,11 +34,87 @@ app.post('/pet', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
         sellerId: req.body.sellerId
     };
     try {
-        let addNewPet = yield db.collection('newPet').insertOne(newPet);
-        res.status(200).send(addNewPet);
+        yield db.collection('dogs').insertOne(newPet);
+        res.status(201).send("The animal added");
     }
     catch (err) {
         res.status(500);
+    }
+}));
+app.put('/pet/:id', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const idPet = req.params.id;
+    const changedDataPet = {};
+    Object.keys(req.body).forEach((key) => {
+        changedDataPet[key] = req.body[key];
+    });
+    try {
+        yield db.collection('dogs').updateOne({ _id: new mongodb_1.ObjectId(idPet) }, { $set: changedDataPet });
+        res.status(200).send('Animals changed success !');
+    }
+    catch (error) {
+        res.status(500).send("Something wrong !");
+    }
+}));
+app.delete('/pet/:id', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    let id = req.params.id;
+    try {
+        yield db.collection('dogs').deleteOne({ _id: new mongodb_1.ObjectId(id) });
+        res.status(204).send('The animal deleted');
+    }
+    catch (err) {
+        res.status(500);
+    }
+}));
+app.get('/sellers', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    try {
+        const sellers = yield db.collection('sellers').find({}).toArray();
+        res.status(200).send(sellers);
+    }
+    catch (error) {
+        res.status(500);
+        console.log(error);
+    }
+}));
+app.post("/seller", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const newSeller = {
+        _id: new mongodb_1.ObjectId(),
+        name: req.body.name,
+        phoneNumber: req.body.phoneNumber,
+        location: req.body.location,
+        rating: req.body.rating,
+        socialMedia: { vk: req.body.socialMedia.vk,
+            telegram: req.body.telegram.socialMedia.telegram }
+    };
+    try {
+        yield db.collection('sellers').insertOne(newSeller);
+        res.status(200).send('The seller added');
+    }
+    catch (error) {
+        res.status(500).send(error);
+    }
+}));
+app.delete('/seller/:id', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    let sellerId = req.params.id;
+    try {
+        yield db.collection('sellers').deleteOne({ _id: new mongodb_1.ObjectId(sellerId) });
+        res.status(204).send("Seller delete");
+    }
+    catch (err) {
+        res.status(500).send(err);
+    }
+}));
+app.put('seller/:id', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    let sellerId = req.params.id;
+    let changeSeller = {};
+    Object.keys(req.body).forEach((key) => {
+        changeSeller[key] = req.body[key];
+    });
+    try {
+        yield db.collection('sellers').updateOne({ _id: new mongodb_1.ObjectId(sellerId) }, { $set: changeSeller });
+        res.status(200).send('change data');
+    }
+    catch (err) {
+        res.status(500).send(err);
     }
 }));
 const startApp = () => __awaiter(void 0, void 0, void 0, function* () {
@@ -52,14 +128,4 @@ const startApp = () => __awaiter(void 0, void 0, void 0, function* () {
         console.log('error');
     }
 });
-app.get('/sellers', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    try {
-        const sellers = yield db.collection('seller').find({}).toArray();
-        res.status(200).send(sellers);
-    }
-    catch (error) {
-        res.status(500);
-        console.log(error);
-    }
-}));
 startApp();

@@ -14,8 +14,6 @@ app.get('/allDogs', async (req: Request, res: Response) => {
     res.status(200).send(dogs)
 })
 
-
-
 app.post('/pet', async (req: Request, res: Response)=> {
     const newPet: DogI = {
         _id: new ObjectId(),
@@ -30,11 +28,86 @@ app.post('/pet', async (req: Request, res: Response)=> {
         sellerId: req.body.sellerId
     }
 try {
-    let addNewPet = await db.collection('newPet').insertOne(newPet)
-    res.status(200).send(addNewPet)
+     await db.collection('dogs').insertOne(newPet)
+      res.status(201).send("The animal added")
 } catch (err){
         res.status(500)
-}
+}})
+
+app.put('/pet/:id',async (req: Request, res: Response)=> {
+    const idPet = req.params.id
+    const changedDataPet: Record<string, unknown>  = {}
+    Object.keys(req.body).forEach((key)=> {
+        changedDataPet[key] = req.body[key]
+    })
+    try {
+        await db.collection('dogs').updateOne({_id: new ObjectId(idPet)}, {$set: changedDataPet})
+        res.status(200).send('Animals changed success !')
+    } catch (error){
+            res.status(500).send("Something wrong !")
+    }
+})
+
+app.delete('/pet/:id', async (req: Request, res: Response)=> {
+    let id = req.params.id
+    try {
+        await db.collection('dogs').deleteOne({_id: new ObjectId(id)})
+        res.status(204).send('The animal deleted')
+    } catch (err){
+        res.status(500)
+    }
+})
+
+app.get('/sellers', async (req: Request, res: Response)=> {
+    try{
+        const sellers = await db.collection('sellers').find({}).toArray()
+        res.status(200).send(sellers)
+    } catch (error){
+        res.status(500)
+        console.log(error)
+    }
+})
+
+app.post("/seller", async (req: Request, res: Response)=> {
+    const newSeller: SellerI  = {
+        _id: new ObjectId(),
+        name: req.body.name,
+        phoneNumber: req.body.phoneNumber,
+        location: req.body.location,
+        rating: req.body.rating,
+        socialMedia: {vk: req.body.socialMedia.vk,
+            telegram: req.body.telegram.socialMedia.telegram}
+    }
+    try {
+        await db.collection('sellers').insertOne(newSeller)
+        res.status(200).send('The seller added')
+    }catch (error){
+        res.status(500).send(error)
+    }
+})
+
+app.delete('/seller/:id', async (req: Request, res: Response)=> {
+    let sellerId = req.params.id
+    try {
+        await db.collection('sellers').deleteOne({_id: new ObjectId(sellerId)})
+        res.status(204).send("Seller delete")
+    } catch (err){
+        res.status(500).send(err)
+    }
+ })
+
+app.put('seller/:id', async (req: Request, res: Response)=> {
+    let sellerId = req.params.id
+    let changeSeller: Record<string, unknown> = {}
+    Object.keys(req.body).forEach((key)=> {
+        changeSeller[key] = req.body[key]
+    })
+    try {
+        await db.collection('sellers').updateOne({_id: new ObjectId(sellerId)}, {$set: changeSeller})
+        res.status(200).send('change data')
+     } catch (err){
+        res.status(500).send(err)
+    }
 })
 
 const startApp = async () => {
@@ -48,15 +121,8 @@ const startApp = async () => {
     }
 }
 
-app.get('/sellers', async (req: Request, res: Response)=> {
-    try{
-        const sellers = await db.collection('seller').find({}).toArray()
-        res.status(200).send(sellers)
-    } catch (error){
-        res.status(500)
-        console.log(error)
-    }
-})
+
+
 
 startApp()
 
