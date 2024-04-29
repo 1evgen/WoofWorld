@@ -13,32 +13,41 @@ exports.dogRouter = void 0;
 const express_1 = require("express");
 const mongodb_1 = require("mongodb");
 const bd_1 = require("../bd/bd");
+const express_validator_1 = require("express-validator");
+const validator_1 = require("../validator/validator");
 exports.dogRouter = (0, express_1.Router)();
 const db = bd_1.client.db('DogHub');
+exports.dogRouter.post('/pet', validator_1.validationField.checkTypesStringForField(validator_1.fields), validator_1.validationField.checkTypesNumberForField(["price", "ageMonth"]), (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const errors = (0, express_validator_1.validationResult)(req);
+    const sellerId = new mongodb_1.ObjectId(req.body.sellerId);
+    if (!errors.isEmpty()) {
+        res.status(400).send({ errors: errors.array() });
+    }
+    else {
+        const newPet = {
+            _id: new mongodb_1.ObjectId(),
+            breed: req.body.breed,
+            name: req.body.name,
+            ageMonth: req.body.ageMonth,
+            gender: req.body.gender,
+            price: req.body.price,
+            description: req.body.description,
+            additionalInfo: req.body.additionalInfo,
+            photos: ['ch.jpg'],
+            sellerId: sellerId
+        };
+        try {
+            yield db.collection('dogs').insertOne(newPet);
+            res.status(201).send(`${typeof req.body.name}`);
+        }
+        catch (err) {
+            res.status(500); // fix status code
+        }
+    }
+}));
 exports.dogRouter.get('/allPets', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const dogs = yield db.collection('dogs').find({}).toArray();
     res.status(200).send(dogs);
-}));
-exports.dogRouter.post('/pet', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    const newPet = {
-        _id: new mongodb_1.ObjectId(),
-        breed: req.body.breed,
-        name: req.body.name,
-        ageMonth: req.body.age,
-        gender: req.body.gender,
-        price: req.body.price,
-        description: req.body.description,
-        additionalInfo: req.body.additionalInfo,
-        photos: ['ch.jpg'],
-        sellerId: req.body.sellerId
-    };
-    try {
-        yield db.collection('dogs').insertOne(newPet);
-        res.status(201).send("The animal added");
-    }
-    catch (err) {
-        res.status(500);
-    }
 }));
 exports.dogRouter.put('/pet/:id', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const idPet = req.params.id;

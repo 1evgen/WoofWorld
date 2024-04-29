@@ -8,16 +8,21 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
 Object.defineProperty(exports, "__esModule", { value: true });
 const bd_1 = require("./bd/bd");
 const dogsRoutes_1 = require("./routes/dogsRoutes");
 const sellerRouters_1 = require("./routes/sellerRouters");
+const body_parser_1 = __importDefault(require("body-parser"));
 const express = require("express");
 const app = express();
 const PORT = process.env.PORT || "3003";
 app.use(express.json());
 app.use('/dogs', dogsRoutes_1.dogRouter);
 app.use('/clients', sellerRouters_1.sellerRouter);
+app.use((0, body_parser_1.default)());
 const startApp = () => __awaiter(void 0, void 0, void 0, function* () {
     try {
         yield (0, bd_1.runDb)();

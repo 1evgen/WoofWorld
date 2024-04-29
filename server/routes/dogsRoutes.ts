@@ -1,35 +1,48 @@
 import {Request, Response, Router} from "express";
 import {ObjectId} from "mongodb";
 import {client} from "../bd/bd";
-
-
- export const dogRouter = Router()
+import {validationResult} from "express-validator";
+import {fields, validationField} from "../validator/validator";
+export const dogRouter = Router()
 const db = client.db('DogHub')
 
-dogRouter.get('/allPets', async (req: Request, res: Response) => {
-    const dogs = await db.collection('dogs').find({}).toArray()
-    res.status(200).send(dogs)
+dogRouter.post('/pet',
+    validationField.checkTypesStringForField(fields),
+    validationField.checkTypesNumberForField(["price","ageMonth"]),
+    async (req: Request, res: Response)=> {
+    const errors = validationResult(req);
+    const sellerId = new ObjectId(req.body.sellerId)
+        if (!errors.isEmpty()){
+            res.status(400).send({ errors: errors.array() })
+        } else {
+            const newPet: DogI = {
+                _id: new ObjectId(),
+                breed: req.body.breed,
+                name: req.body.name,
+                ageMonth: req.body.ageMonth,
+                gender: req.body.gender,
+                price: req.body.price,
+                description: req.body.description,
+                additionalInfo: req.body.additionalInfo,
+                photos: ['ch.jpg'],
+                sellerId: sellerId
+            }
+            try {
+                await db.collection('dogs').insertOne(newPet)
+                res.status(201).send(`${typeof req.body.name}`)
+            } catch (err){
+                res.status(500) // fix status code
+            }
+        }
 })
 
-dogRouter.post('/pet', async (req: Request, res: Response)=> {
-    const newPet: DogI = {
-        _id: new ObjectId(),
-        breed: req.body.breed,
-        name: req.body.name,
-        ageMonth: req.body.age,
-        gender: req.body.gender,
-        price: req.body.price,
-        description: req.body.description,
-        additionalInfo: req.body.additionalInfo,
-        photos: ['ch.jpg'],
-        sellerId: req.body.sellerId
-    }
-    try {
-        await db.collection('dogs').insertOne(newPet)
-        res.status(201).send("The animal added")
-    } catch (err){
-        res.status(500)
-    }})
+
+dogRouter.get('/allPets',
+    async (req: Request, res: Response) =>
+    {
+        const dogs = await db.collection('dogs').find({}).toArray()
+        res.status(200).send(dogs)
+    })
 
 dogRouter.put('/pet/:id',async (req: Request, res: Response)=> {
     const idPet = req.params.id
@@ -54,6 +67,7 @@ dogRouter.delete('/pet/:id', async (req: Request, res: Response)=> {
         res.status(500)
     }
 })
+
 
 interface DogI {
     _id: ObjectId,
