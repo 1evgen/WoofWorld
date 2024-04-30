@@ -44,19 +44,34 @@ dogRouter.get('/allPets',
         res.status(200).send(dogs)
     })
 
-dogRouter.put('/pet/:id',async (req: Request, res: Response)=> {
-    const idPet = req.params.id
-    const changedDataPet: Record<string, unknown>  = {}
-    Object.keys(req.body).forEach((key)=> {
-        changedDataPet[key] = req.body[key]
-    })
-    try {
-        await db.collection('dogs').updateOne({_id: new ObjectId(idPet)}, {$set: changedDataPet})
-        res.status(200).send('Animals changed success !')
-    } catch (error){
-        res.status(500).send("Something wrong !")
-    }
-})
+
+
+
+dogRouter.put('/pet/:id',
+    async (req: Request, res: Response)=> {
+
+            const idPet = req.params.id
+            const changedDataPet: Record<string, unknown>  = {}
+                Object.keys(req.body).forEach((key)=> {
+                    changedDataPet[key]  = req.body[key]
+                })
+            for(let key in changedDataPet){
+                if(changedDataPet[key] === '' ||  changedDataPet[key] === undefined){
+                    delete changedDataPet[key]
+                }
+            }
+            if(Object.keys(changedDataPet).length> 1){
+
+            }
+            const errors = validationResult(req)
+                try {
+                    await db.collection('dogs').updateOne({_id: new ObjectId(idPet)}, {$set: changedDataPet})
+                    res.status(200).send('Animals changed success !')
+                } catch (error){
+                    res.status(500).send("Something wrong !")
+                }
+
+ })
 
 dogRouter.delete('/pet/:id', async (req: Request, res: Response)=> {
     let id = req.params.id

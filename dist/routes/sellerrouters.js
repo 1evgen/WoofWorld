@@ -13,6 +13,8 @@ exports.sellerRouter = void 0;
 const mongodb_1 = require("mongodb");
 const express_1 = require("express");
 const bd_1 = require("../bd/bd");
+const validator_1 = require("../validator/validator");
+const express_validator_1 = require("express-validator");
 const db = bd_1.client.db('DogHub');
 exports.sellerRouter = (0, express_1.Router)();
 exports.sellerRouter.get('/sellers', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
@@ -25,7 +27,7 @@ exports.sellerRouter.get('/sellers', (req, res) => __awaiter(void 0, void 0, voi
         console.log(error);
     }
 }));
-exports.sellerRouter.post("/seller", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+exports.sellerRouter.post("/seller", validator_1.validationField.checkTypesStringForField(["name", "phoneNumber", "location"]), validator_1.validationField.checkTypesNumberForField(["rating"]), (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const newSeller = {
         _id: new mongodb_1.ObjectId(),
         name: req.body.name,
@@ -37,12 +39,18 @@ exports.sellerRouter.post("/seller", (req, res) => __awaiter(void 0, void 0, voi
             telegram: req.body.socialMedia ? req.body.socialMedia.telegram : ""
         }
     };
-    try {
-        yield db.collection('sellers').insertOne(newSeller);
-        res.status(200).send('The seller added');
+    const error = (0, express_validator_1.validationResult)(newSeller);
+    if (error.isEmpty()) {
+        try {
+            yield db.collection('sellers').insertOne(newSeller);
+            res.status(200).send('The seller added');
+        }
+        catch (error) {
+            res.status(500).send(error);
+        }
     }
-    catch (error) {
-        res.status(500).send(error);
+    else {
+        res.status(400).send({ errors: error.array() });
     }
 }));
 exports.sellerRouter.delete('/seller/:id', (req, res) => __awaiter(void 0, void 0, void 0, function* () {

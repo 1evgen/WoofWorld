@@ -55,6 +55,14 @@ exports.dogRouter.put('/pet/:id', (req, res) => __awaiter(void 0, void 0, void 0
     Object.keys(req.body).forEach((key) => {
         changedDataPet[key] = req.body[key];
     });
+    for (let key in changedDataPet) {
+        if (changedDataPet[key] === '' || changedDataPet[key] === undefined) {
+            delete changedDataPet[key];
+        }
+    }
+    if (Object.keys(changedDataPet).length > 1) {
+    }
+    const errors = (0, express_validator_1.validationResult)(req);
     try {
         yield db.collection('dogs').updateOne({ _id: new mongodb_1.ObjectId(idPet) }, { $set: changedDataPet });
         res.status(200).send('Animals changed success !');

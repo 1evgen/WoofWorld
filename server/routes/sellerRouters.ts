@@ -1,6 +1,8 @@
 import {ObjectId} from "mongodb";
 import {Request, Response, Router} from "express";
 import {client} from "../bd/bd";
+import {validationField} from "../validator/validator";
+import {validationResult} from "express-validator";
 const db = client.db('DogHub')
 
 export const sellerRouter = Router()
@@ -14,7 +16,10 @@ sellerRouter.get('/sellers', async (req: Request, res: Response)=> {
         console.log(error)
     }
 })
-sellerRouter.post("/seller", async (req: Request, res: Response)=> {
+sellerRouter.post("/seller",
+        validationField.checkTypesStringForField(["name","phoneNumber","location"]),
+        validationField.checkTypesNumberForField(["rating"]),
+    async (req: Request, res: Response)=> {
     const newSeller: SellerI  = {
         _id: new ObjectId(),
         name: req.body.name,
@@ -26,12 +31,18 @@ sellerRouter.post("/seller", async (req: Request, res: Response)=> {
             telegram: req.body.socialMedia ? req.body.socialMedia.telegram : ""
         }
     };
-    try {
-        await db.collection('sellers').insertOne(newSeller)
-        res.status(200).send('The seller added')
-    }catch (error){
-        res.status(500).send(error)
+    const error =  validationResult(newSeller)
+    if(error.isEmpty()){
+        try {
+            await db.collection('sellers').insertOne(newSeller)
+            res.status(200).send('The seller added')
+        }catch (error){
+            res.status(500).send(error)
+        }
+    } else {
+        res.status(400).send({errors: error.array()})
     }
+
 })
 sellerRouter.delete('/seller/:id', async (req: Request, res: Response)=> {
     let sellerId = req.params.id

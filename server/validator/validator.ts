@@ -1,5 +1,5 @@
 import {body, check, validationResult} from "express-validator";
-
+import {Request} from "express";
 export const fields = ['name', 'breed', 'description', 'additionalInfo']
 
 export const validationField = {
@@ -17,8 +17,9 @@ export const validationField = {
             if(isNaN(value)){
                 return true
             } else {
-                throw new Error('Age and price must be number')
+                throw new Error('This field must be number')
             }
         }))
     }
+
 }

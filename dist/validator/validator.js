@@ -20,7 +20,7 @@ exports.validationField = {
                 return true;
             }
             else {
-                throw new Error('Age and price must be number');
+                throw new Error('This field must be number');
             }
         }));
     }
