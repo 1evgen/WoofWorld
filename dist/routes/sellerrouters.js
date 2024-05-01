@@ -23,7 +23,7 @@ exports.sellerRouter.get('/sellers', (req, res) => __awaiter(void 0, void 0, voi
         res.status(200).send(sellers);
     }
     catch (error) {
-        res.status(500);
+        res.status(404);
         console.log(error);
     }
 }));
@@ -46,7 +46,7 @@ exports.sellerRouter.post("/seller", validator_1.validationField.checkTypesStrin
             res.status(200).send('The seller added');
         }
         catch (error) {
-            res.status(500).send(error);
+            res.status(404).send(error);
         }
     }
     else {
@@ -74,6 +74,6 @@ exports.sellerRouter.put('/seller/:id', (req, res) => __awaiter(void 0, void 0, 
         res.status(200).send('change data');
     }
     catch (err) {
-        res.status(500).send(err);
+        res.status(404).send(err);
     }
 }));

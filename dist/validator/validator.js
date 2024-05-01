@@ -7,6 +7,7 @@ exports.validationField = {
     checkTypesStringForField(fields) {
         if (fields) {
             return fields === null || fields === void 0 ? void 0 : fields.map((f) => (0, express_validator_1.body)(f).isString().withMessage("The field must be string")
+                .escape()
                 .trim()
                 .notEmpty().withMessage("The field was pass empty string"));
         }
@@ -16,7 +17,7 @@ exports.validationField = {
     },
     checkTypesNumberForField(fields) {
         return fields.map((f) => (0, express_validator_1.body)(f).custom((value) => {
-            if (isNaN(value)) {
+            if (!isNaN(value)) {
                 return true;
             }
             else {

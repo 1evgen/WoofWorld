@@ -4,7 +4,6 @@ import {client} from "../bd/bd";
 import {validationField} from "../validator/validator";
 import {validationResult} from "express-validator";
 const db = client.db('DogHub')
-
 export const sellerRouter = Router()
 
 sellerRouter.get('/sellers', async (req: Request, res: Response)=> {
@@ -12,7 +11,7 @@ sellerRouter.get('/sellers', async (req: Request, res: Response)=> {
         const sellers = await db.collection('sellers').find({}).toArray()
         res.status(200).send(sellers)
     } catch (error){
-        res.status(500)
+        res.status(404)
         console.log(error)
     }
 })
@@ -31,13 +30,15 @@ sellerRouter.post("/seller",
             telegram: req.body.socialMedia ? req.body.socialMedia.telegram : ""
         }
     };
+
+
     const error =  validationResult(newSeller)
     if(error.isEmpty()){
         try {
             await db.collection('sellers').insertOne(newSeller)
             res.status(200).send('The seller added')
         }catch (error){
-            res.status(500).send(error)
+            res.status(404).send(error)
         }
     } else {
         res.status(400).send({errors: error.array()})
@@ -64,7 +65,7 @@ sellerRouter.put('/seller/:id', async (req: Request, res: Response)=> {
         await db.collection('sellers').updateOne({_id: new ObjectId(sellerId)}, {$set: changeSeller})
         res.status(200).send('change data')
     } catch (err){
-        res.status(500).send(err)
+        res.status(404).send(err)
     }
 })
 

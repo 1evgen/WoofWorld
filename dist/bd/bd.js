@@ -9,10 +9,28 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.runDb = exports.client = void 0;
+exports.runDb = exports.upload = exports.client = exports.MongoUri = void 0;
 const mongodb_1 = require("mongodb");
-let MongoUri = process.env.MongoUri || "mongodb://127.0.0.1:27017/DogHub";
-exports.client = new mongodb_1.MongoClient(MongoUri);
+const { GridFsStorage } = require("multer-gridfs-storage");
+const multer = require("multer");
+require("dotenv").config();
+exports.MongoUri = process.env.MongoUri || "mongodb://127.0.0.1:27017/DogHub";
+exports.client = new mongodb_1.MongoClient(exports.MongoUri);
+const storage = new GridFsStorage({
+    url: exports.MongoUri,
+    file: (req, file) => {
+        if (file.mimetype === "image/jpeg" || file.mimetype === "image/png") {
+            return {
+                bucketName: "photos",
+                filename: `${Date.now()}_${file.originalname}`,
+            };
+        }
+        else {
+            return `${Date.now()}_${file.originalname}`;
+        }
+    },
+});
+exports.upload = multer({ storage });
 function runDb() {
     return __awaiter(this, void 0, void 0, function* () {
         try {

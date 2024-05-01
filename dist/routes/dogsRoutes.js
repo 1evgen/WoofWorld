@@ -33,18 +33,29 @@ exports.dogRouter.post('/pet', validator_1.validationField.checkTypesStringForFi
             price: req.body.price,
             description: req.body.description,
             additionalInfo: req.body.additionalInfo,
-            photos: ['ch.jpg'],
-            sellerId: sellerId
+            sellerId: sellerId,
+            photos: []
         };
         try {
             yield db.collection('dogs').insertOne(newPet);
             res.status(201).send(`${typeof req.body.name}`);
         }
         catch (err) {
-            res.status(500); // fix status code
+            res.status(404); // fix status code
         }
     }
 }));
+exports.dogRouter.post("/basePhoto", bd_1.upload.single('test'), (req, res) => {
+    const file = req.file;
+    if (file) {
+        res.send({
+            message: "Uploaded",
+            id: file.id,
+            name: file.filename,
+            contentType: file.contentType,
+        });
+    }
+});
 exports.dogRouter.get('/allPets', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const dogs = yield db.collection('dogs').find({}).toArray();
     res.status(200).send(dogs);
@@ -68,7 +79,7 @@ exports.dogRouter.put('/pet/:id', (req, res) => __awaiter(void 0, void 0, void 0
         res.status(200).send('Animals changed success !');
     }
     catch (error) {
-        res.status(500).send("Something wrong !");
+        res.status(404).send("Something wrong !");
     }
 }));
 exports.dogRouter.delete('/pet/:id', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
@@ -78,6 +89,6 @@ exports.dogRouter.delete('/pet/:id', (req, res) => __awaiter(void 0, void 0, voi
         res.status(204).send('The animal deleted');
     }
     catch (err) {
-        res.status(500);
+        res.status(404);
     }
 }));
